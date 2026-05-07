@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { supabase } from "../lib/supabase";
+import { addScore } from "../lib/leaderboard";
 
 type Challenge = {
   id: number;
@@ -9,11 +11,9 @@ type Challenge = {
 };
 
 const challenges: Challenge[] = [
-  { id: 1, title: "Take a photo with someone from another table", points: 5 },
-  { id: 2, title: "Take a dance floor selfie", points: 5 },
-  { id: 3, title: "Take a photo outside in the chill area", points: 10 },
-  { id: 4, title: "Take a photo with someone married 20+ years", points: 10 },
-  { id: 5, title: "Recreate a famous movie scene", points: 15 },
+  { id: 1, title: "Take a selfie with the bride", points: 10 },
+  { id: 2, title: "Take a photo dancing", points: 5 },
+  { id: 3, title: "Take a picture with dessert", points: 5 },
 ];
 
 export default function Scavenger() {
@@ -29,19 +29,42 @@ export default function Scavenger() {
       return;
     }
 
-    setUploading(true);
-    setMessage("Submitting...");
-
     const challenge = challenges.find(
       (c) => c.id === Number(selectedChallenge)
     );
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "wedding_uploads");
-    formData.append("folder", "scavenger-submissions");
+    if (!challenge) {
+      setMessage("Please choose a valid challenge.");
+      return;
+    }
+
+    setUploading(true);
+    setMessage("Submitting...");
 
     try {
+      const cleanTeamName = teamName.trim();
+
+      const { data: existingSubmission, error: checkError } = await supabase
+        .from("submissions")
+        .select("*")
+        .eq("team_name", cleanTeamName)
+        .eq("challenge_id", challenge.id);
+
+      if (checkError) {
+        throw new Error("Could not check previous submissions.");
+      }
+
+      if (existingSubmission && existingSubmission.length > 0) {
+        setMessage("This team already completed that challenge.");
+        setUploading(false);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "wedding_uploads");
+      formData.append("folder", "scavenger-submissions");
+
       const res = await fetch(
         "https://api.cloudinary.com/v1_1/di2sfqdey/image/upload",
         {
@@ -50,15 +73,32 @@ export default function Scavenger() {
         }
       );
 
-      if (!res.ok) throw new Error("Upload failed");
+      if (!res.ok) {
+        throw new Error("Photo upload failed.");
+      }
 
-      const existingScore = Number(localStorage.getItem(teamName) || 0);
-      const newScore = existingScore + (challenge?.points || 0);
+      const uploadedPhoto = await res.json();
 
-      localStorage.setItem(teamName, String(newScore));
+      const { error: insertError } = await supabase
+        .from("submissions")
+        .insert([
+          {
+            team_name: cleanTeamName,
+            challenge_id: challenge.id,
+            challenge_title: challenge.title,
+            points: challenge.points,
+            photo_url: uploadedPhoto.secure_url,
+          },
+        ]);
+
+      if (insertError) {
+        throw new Error("Could not save submission.");
+      }
+
+      await addScore(cleanTeamName, challenge.points);
 
       setMessage(
-        `Submitted! ${teamName} earned ${challenge?.points} points. Total: ${newScore}`
+        `Submitted! ${cleanTeamName} earned ${challenge.points} points.`
       );
 
       setSelectedChallenge("");
@@ -126,6 +166,12 @@ export default function Scavenger() {
         )}
 
         <div className="mt-6">
+          <a href="/leaderboard" className="text-sm underline">
+            View Leaderboard
+          </a>
+        </div>
+
+        <div className="mt-3">
           <a href="/" className="text-sm underline">
             Back to Home
           </a>
