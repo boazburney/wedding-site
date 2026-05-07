@@ -11,9 +11,40 @@ type Challenge = {
 };
 
 const challenges: Challenge[] = [
-  { id: 1, title: "Take a selfie with the bride", points: 10 },
-  { id: 2, title: "Take a photo dancing", points: 5 },
-  { id: 3, title: "Take a picture with dessert", points: 5 },
+  { id: 1, title: "Take a picture with the bride", points: 5 },
+  { id: 2, title: "Take a picture with the groom", points: 5 },
+  { id: 3, title: "Take a picture with someone that lives outside of Missouri", points: 5 },
+  { id: 4, title: "Take a picture with someone wearing blue", points: 5 },
+  { id: 5, title: "Find a guest wearing glasses", points: 5 },
+  { id: 6, title: "Take a photo with a couple married 20+ years", points: 5 },
+  { id: 7, title: "Take a group picture at your table", points: 5 },
+  { id: 8, title: "Find someone taller than you", points: 5 },
+  { id: 9, title: "Capture the bride dancing", points: 5 },
+  { id: 10, title: "Capture the groom dancing", points: 5 },
+  { id: 11, title: "Take a photo of someone singing along loudly", points: 5 },
+  { id: 12, title: "Take a selfie on the dance floor", points: 5 },
+  { id: 13, title: "Capture a picture of your favorite dessert", points: 5 },
+  { id: 14, title: "Take a picure playing of a round of mini golf", points: 5 },
+  { id: 15, title: "Find the most energetic guest", points: 5 },
+  { id: 16, title: "Capture a candid moment between the couple", points: 5 },
+  { id: 17, title: "Take a picture with someone who knew the couple before they dated", points: 5 },
+  { id: 18, title: 'Take a picture with "LOVE"', points: 5 },
+
+  { id: 19, title: "Find the best mustache/beard", points: 10 },
+  { id: 20, title: "Photo of the rings", points: 10 },
+  { id: 21, title: "Take a picture with a twin", points: 10 },
+  { id: 22, title: "Take a picture the same birth day and month as you or someone on your team", points: 10 },
+  { id: 23, title: 'Take a picture of someone wearing "Mahomes" socks', points: 10 },
+  { id: 24, title: "Take a picture with a left-handed guest", points: 10 },
+
+  { id: 25, title: "Take a picture with a set of twins", points: 25 },
+  { id: 26, title: "Take a picture with an Ace of Hearts", points: 25 },
+  { id: 27, title: "Take a picture with the person who played the largest role in the couple meeting", points: 25 },
+
+  { id: 28, title: "Take a picture with a hidden dinosaur toy", points: 50 },
+  { id: 29, title: "Take a picture with a hidden LEGO figurine", points: 50 },
+
+  { id: 30, title: "Take a picture with the answer to the riddle found on the hidden QR code", points: 75 },
 ];
 
 export default function Scavenger() {
@@ -30,7 +61,7 @@ export default function Scavenger() {
     }
 
     const challenge = challenges.find(
-      (c) => c.id === Number(selectedChallenge)
+      (item) => item.id === Number(selectedChallenge)
     );
 
     if (!challenge) {
@@ -133,6 +164,7 @@ export default function Scavenger() {
           className="mt-4 w-full rounded-xl border px-4 py-3 text-lg"
         >
           <option value="">Choose a challenge</option>
+
           {challenges.map((challenge) => (
             <option key={challenge.id} value={challenge.id}>
               {challenge.title} - {challenge.points} points
