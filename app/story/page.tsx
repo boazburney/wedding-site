@@ -3,12 +3,16 @@
 export default function StoryPage() {
   return (
     <main
-      style={{
-        maxWidth: "800px",
-        margin: "0 auto",
-        padding: "40px 20px",
-        lineHeight: "1.8",
-      }}
+  style={{
+    maxWidth: "800px",
+    margin: "0 auto",
+    padding: "40px 20px",
+    lineHeight: "1.8",
+    backgroundColor: "#f6f2ec",
+    color: "#2b2824",
+    minHeight: "100vh",
+  }}
+
     >
       <div style={{ textAlign: "center", marginBottom: "50px" }}>
         <h1

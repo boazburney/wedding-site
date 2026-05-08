@@ -85,11 +85,11 @@ export default function Seating() {
   };
 
   return (
-    <main className="min-h-screen bg-stone-100 text-stone-900 px-6 py-10">
+    <main className="min-h-screen bg-[#f6f2ec] text-[#2b2824] px-6 py-10">
       <section className="mx-auto max-w-xl text-center">
-        <h1 className="text-4xl font-bold">Find Your Seat</h1>
+        <h1 className="text-4xl font-bold text-[#2b2824]">Find Your Seat</h1>
 
-        <p className="mt-4 text-stone-600">
+        <p className="mt-4 text-[#626f5f]">
           Enter your first name to find your table.
         </p>
 
@@ -103,18 +103,18 @@ export default function Seating() {
               handleSearch();
             }
           }}
-          className="mt-6 w-full rounded-xl border px-4 py-3 text-lg"
+          className="mt-6 w-full rounded-xl border border-[#d9c7bd] bg-white px-4 py-3 text-lg text-[#2b2824]"
         />
 
         <button
           onClick={handleSearch}
-          className="mt-4 w-full rounded-xl bg-stone-900 text-white py-3 text-lg font-semibold"
+          className="mt-4 w-full rounded-xl bg-[#626f5f] text-white py-3 text-lg font-semibold"
         >
           Search
         </button>
 
         {result && (
-          <div className="mt-8 rounded-2xl bg-white px-6 py-5 text-2xl font-bold shadow">
+          <div className="mt-8 rounded-2xl border border-[#e8c8bf] bg-white px-6 py-5 text-2xl font-bold text-[#2b2824] shadow">
             {result}
           </div>
         )}
@@ -125,7 +125,7 @@ export default function Seating() {
               <button
                 key={`${guest.name}-${index}`}
                 onClick={() => showGuestResult(guest)}
-                className="rounded-xl bg-white px-4 py-3 text-lg font-semibold shadow"
+                className="rounded-xl border border-[#b8c8d8] bg-white px-4 py-3 text-lg font-semibold text-[#2b2824] shadow"
               >
                 {guest.name}
               </button>
@@ -134,13 +134,13 @@ export default function Seating() {
         )}
 
         {(result || matches.length > 0) && (
-          <button onClick={resetSearch} className="mt-5 text-sm underline">
+          <button onClick={resetSearch} className="mt-5 text-sm underline text-[#7f93a6]">
             Search another name
           </button>
         )}
 
         <div className="mt-8">
-          <a href="/" className="text-sm underline">
+          <a href="/" className="text-sm underline text-[#7f93a6]">
             Back to Home
           </a>
         </div>
