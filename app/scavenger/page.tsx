@@ -10,6 +10,62 @@ type Challenge = {
   points: number;
 };
 
+async function compressImage(file: File): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      img.src = reader.result as string;
+    };
+
+    img.onload = () => {
+      const maxWidth = 1600;
+      const scale = Math.min(1, maxWidth / img.width);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        reject(new Error("Could not compress image."));
+        return;
+      }
+
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error("Compression failed."));
+            return;
+          }
+
+          const compressedFile = new File(
+            [blob],
+            file.name.replace(/\.[^/.]+$/, ".jpg"),
+            {
+              type: "image/jpeg",
+              lastModified: Date.now(),
+            }
+          );
+
+          resolve(compressedFile);
+        },
+        "image/jpeg",
+        0.75
+      );
+    };
+
+    img.onerror = () => reject(new Error("Image load failed."));
+    reader.onerror = () => reject(new Error("File read failed."));
+
+    reader.readAsDataURL(file);
+  });
+}
+
 const challenges: Challenge[] = [
   { id: 1, title: "Take a picture with the bride", points: 5 },
   { id: 2, title: "Take a picture with the groom", points: 5 },
@@ -70,7 +126,7 @@ export default function Scavenger() {
     }
 
     setUploading(true);
-    setMessage("Submitting...");
+    setMessage("Compressing and submitting...");
 
     try {
       const cleanTeamName = teamName.trim();
@@ -91,8 +147,10 @@ export default function Scavenger() {
         return;
       }
 
+      const compressedFile = await compressImage(file);
+
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", compressedFile);
       formData.append("upload_preset", "wedding_uploads");
       formData.append("folder", "scavenger-submissions");
 
@@ -188,7 +246,7 @@ export default function Scavenger() {
           disabled={uploading}
           className="mt-4 w-full rounded-xl bg-stone-900 text-white py-3 text-lg font-semibold disabled:opacity-50"
         >
-          {uploading ? "Submitting..." : "Submit Challenge"}
+          {uploading ? "Compressing & Submitting..." : "Submit Challenge"}
         </button>
 
         {message && (
